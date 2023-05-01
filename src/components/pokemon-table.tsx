@@ -1,13 +1,12 @@
-import * as React from "react";
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import { DataGrid, GridRowsProp, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import pokemons from "@/data/clean_pokemon.json"
-import type_color from "@/data/type_color.json"
+import pokemons from "@/data/clean_pokemon.json";
+import type_color from "@/data/type_color.json";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import Typography from "@mui/material/Typography";
-import CardActions from "@mui/material/CardActions";
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp } from "@mui/x-data-grid";
+import Image from "next/image";
 
 
 const rows: GridRowsProp = pokemons;
@@ -57,6 +56,7 @@ function pokemon_type_renderer(params: GridRenderCellParams<any, PokemonTypes>) 
     const type_name = type.name as (keyof typeof type_color)
     return <Chip
       label={type_name}
+      key={params.id}
       sx={{
         bgcolor: type_color[type_name]
       }}
@@ -79,6 +79,7 @@ function pokemon_move_renderer(params: GridRenderCellParams<any, PokemonMoves>) 
 
     return (
       <Card
+        key={params.id}
         sx={{
           height: 45,
           p: 1
@@ -121,7 +122,7 @@ function sprite_renderer(params: GridRenderCellParams<any, string>) {
   const sprite_url = params.value;
 
   return (
-    <img src={sprite_url} alt="sprite" />
+    <Image src={sprite_url!} alt="sprite"/>
   )
 }
 
