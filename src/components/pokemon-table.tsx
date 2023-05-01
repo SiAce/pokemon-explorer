@@ -14,7 +14,7 @@ type PokemonMoves = typeof pokemons[number]["moves"];
 type PokemonTypes = typeof pokemons[number]["type"]
 
 const columns: GridColDef[] = [
-  { field: "id", width: 100 },
+  { field: "id", width: 70 },
   {
     field: "sprite",
     renderCell: sprite_renderer
@@ -86,14 +86,13 @@ function pokemon_move_renderer(params: GridRenderCellParams<any, PokemonMoves>) 
         }}>
         <CardContent
           sx={{
-
             m: 0,
             p: 0
           }}>
           <Typography
             sx={{
               height: 20,
-              m: 0.5,
+              m: 0,
               p: 0
             }}
           >
@@ -122,7 +121,7 @@ function sprite_renderer(params: GridRenderCellParams<any, string>) {
   const sprite_url = params.value;
 
   return (
-    <Image src={sprite_url!} alt="sprite"/>
+    <Image src={sprite_url!} alt="sprite" width={70} height={70}/>
   )
 }
 
