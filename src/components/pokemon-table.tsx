@@ -11,7 +11,10 @@ import Image from "next/image";
 
 const rows: GridRowsProp = pokemons;
 type PokemonMoves = typeof pokemons[number]["moves"];
+type PokemonMove = PokemonMoves[number];
+
 type PokemonTypes = typeof pokemons[number]["type"]
+type PokemonType = PokemonTypes[number];
 
 const columns: GridColDef[] = [
   { field: "id", width: 70 },
@@ -19,7 +22,11 @@ const columns: GridColDef[] = [
     field: "sprite",
     renderCell: sprite_renderer
   },
-  { field: "name" },
+  {
+    field: "name",
+    renderCell: (params) =>
+      <a href={`/pokemons/${params.row.id}`}>{params.value}</a>,
+  },
   { field: "height" },
   { field: "weight" },
   {
@@ -52,16 +59,7 @@ export default function PokemonTable() {
 function pokemon_type_renderer(params: GridRenderCellParams<any, PokemonTypes>) {
   const types = params.value;
 
-  const chips = types?.map((type) => {
-    const type_name = type.name as (keyof typeof type_color)
-    return <Chip
-      label={type_name}
-      key={params.id}
-      sx={{
-        bgcolor: type_color[type_name]
-      }}
-    />
-  })
+  const chips = types?.map(type_to_chip)
 
   return (
     <Stack direction="row" spacing={1}>
@@ -73,42 +71,7 @@ function pokemon_type_renderer(params: GridRenderCellParams<any, PokemonTypes>) 
 function pokemon_move_renderer(params: GridRenderCellParams<any, PokemonMoves>) {
   const moves = params.value;
 
-  const cards = moves?.map((move) => {
-    const move_name = move.name;
-    const type_name = move.type as (keyof typeof type_color)
-
-    return (
-      <Card
-        key={params.id}
-        sx={{
-          height: 45,
-          p: 1
-        }}>
-        <CardContent
-          sx={{
-            m: 0,
-            p: 0
-          }}>
-          <Typography
-            sx={{
-              height: 20,
-              m: 0,
-              p: 0
-            }}
-          >
-            {move_name}
-          </Typography>
-          <Chip
-            label={type_name}
-            sx={{
-              bgcolor: type_color[type_name],
-              height: 20
-            }}
-          />
-        </CardContent>
-      </Card>
-    );
-  })
+  const cards = moves?.map(move_to_card)
 
   return (
     <Stack direction="row" spacing={1}>
@@ -121,7 +84,52 @@ function sprite_renderer(params: GridRenderCellParams<any, string>) {
   const sprite_url = params.value;
 
   return (
-    <Image src={sprite_url!} alt="sprite" width={70} height={70}/>
+    <Image src={sprite_url!} alt="sprite" width={70} height={70} />
   )
 }
 
+export function type_to_chip(type: PokemonType, index: number) {
+  const type_name = type.name as (keyof typeof type_color);
+  return <Chip
+    label={type_name}
+    key={index}
+    sx={{
+      bgcolor: type_color[type_name]
+    }} />;
+}
+
+export function move_to_card(move: PokemonMove, index: number) {
+  const move_name = move.name;
+  const type_name = move.type as (keyof typeof type_color);
+
+  return (
+    <Card
+      key={index}
+      sx={{
+        height: 45,
+        p: 1
+      }}>
+      <CardContent
+        sx={{
+          m: 0,
+          p: 0
+        }}>
+        <Typography
+          sx={{
+            height: 20,
+            m: 0,
+            p: 0
+          }}
+        >
+          {move_name}
+        </Typography>
+        <Chip
+          label={type_name}
+          sx={{
+            bgcolor: type_color[type_name],
+            height: 20
+          }} />
+      </CardContent>
+    </Card>
+  );
+}
