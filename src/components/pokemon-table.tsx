@@ -1,41 +1,44 @@
 import pokemons from "@/data/clean_pokemon.json";
-import type_color from "@/data/type_color.json";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from '@mui/material/Chip';
+import { capitalize } from "@/utils/strings";
+import { Link } from "@mui/joy";
 import Stack from '@mui/material/Stack';
-import Typography from "@mui/material/Typography";
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp } from "@mui/x-data-grid";
 import Image from "next/image";
+import { move_to_card, type_to_chip } from "../utils/data_to_display";
+import { PokemonMoves, PokemonTypes } from "../utils/model";
 
 
 const rows: GridRowsProp = pokemons;
-type PokemonMoves = typeof pokemons[number]["moves"];
-type PokemonMove = PokemonMoves[number];
-
-type PokemonTypes = typeof pokemons[number]["type"]
-type PokemonType = PokemonTypes[number];
-
 const columns: GridColDef[] = [
-  { field: "id", width: 70 },
+  { field: "id", headerName: "ID", width: 70 },
   {
     field: "sprite",
+    headerName: "Image",
     renderCell: sprite_renderer
   },
   {
     field: "name",
+    headerName: "Name",
     renderCell: (params) =>
-      <a href={`/pokemons/${params.row.id}`}>{params.value}</a>,
+      <Link href={`/pokemons/${params.row.id}`}>{capitalize(params.value)}</Link>,
   },
-  { field: "height" },
-  { field: "weight" },
+  {
+    field: "height",
+    headerName: "Height",
+  },
+  {
+    field: "weight",
+    headerName: "Weight",
+  },
   {
     field: "type",
+    headerName: "Types",
     width: 200,
     renderCell: pokemon_type_renderer
   },
   {
     field: "moves",
+    headerName: "Moves",
     width: 700,
     renderCell: pokemon_move_renderer
   },
@@ -51,6 +54,15 @@ export default function PokemonTable() {
           pagination: { paginationModel: { pageSize: 10 } },
         }}
         pageSizeOptions={[5, 10, 25, 50, 100]}
+        sx={{
+          boxShadow: 2,
+          border: 2,
+          backgroundColor: '#f9ffe6',
+          borderColor: 'gray',
+          '& .MuiDataGrid-cell:hover': {
+            color: 'primary.main',
+          },
+        }}
       />
     </div>
   );
@@ -88,48 +100,3 @@ function sprite_renderer(params: GridRenderCellParams<any, string>) {
   )
 }
 
-export function type_to_chip(type: PokemonType, index: number) {
-  const type_name = type.name as (keyof typeof type_color);
-  return <Chip
-    label={type_name}
-    key={index}
-    sx={{
-      bgcolor: type_color[type_name]
-    }} />;
-}
-
-export function move_to_card(move: PokemonMove, index: number) {
-  const move_name = move.name;
-  const type_name = move.type as (keyof typeof type_color);
-
-  return (
-    <Card
-      key={index}
-      sx={{
-        height: 45,
-        p: 1
-      }}>
-      <CardContent
-        sx={{
-          m: 0,
-          p: 0
-        }}>
-        <Typography
-          sx={{
-            height: 20,
-            m: 0,
-            p: 0
-          }}
-        >
-          {move_name}
-        </Typography>
-        <Chip
-          label={type_name}
-          sx={{
-            bgcolor: type_color[type_name],
-            height: 20
-          }} />
-      </CardContent>
-    </Card>
-  );
-}
